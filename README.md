@@ -6,6 +6,6 @@ The main goal of August Offensive is to enable players to interact with the serv
 
 ## Technical Objectives
 
-The web service will provide a RESTful API that is written in PHP 7 and connects to a PostGreSQL database. This connection will be managed behind an abstraction layer using PDO. The service will handle users and their game sessions. 
+The web service will provide a RESTful API that is written in PHP 7 and connects to a PostGreSQL database. This connection will be managed behind an abstraction layer using PDO. The service will handle users and their game sessions. In addition, all PHP code shall follow PSR-1, PSR-2, PSR-4, and PSR-5 coding standards. It is also recommended to try to write as immutably as possible.
 
 The front-end of this project will be written using [Elm](http://elm-lang.org/). Work on the front-end portion will not begin until August Offensive's web API has reached relative stability. The version for target stability is alpha 1.0.0.
