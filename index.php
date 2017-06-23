@@ -2,8 +2,9 @@
 
 namespace AugustOffensive;
 
-include 'private/view/Result.php';
 include 'private/model/Connection.php';
+include 'private/view/Result.php';
+include 'private/controller/Controller.php';
 
 use AugustOffensive\view;
 use AugustOffensive\model;

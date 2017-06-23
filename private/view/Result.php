@@ -2,9 +2,6 @@
 
 namespace AugustOffensive\view;
 
-include '../controller/Controller.php';
-include '../model/Connection.php';
-
 use AugustOffensive\controller;
 use AugustOffensive\model;
 
@@ -20,7 +17,7 @@ class Result
      *
      * @return Result
      */
-    public function __construct (Connection $connection)
+    public function __construct (model\Connection $connection)
     {
         header("Content-Type: application/json");
         //
@@ -29,11 +26,11 @@ class Result
     /**
      * Communicates with the controller to generate the JSON result.
      *
-     * @return array $result resulting sendback object generated from query.
+     * @return string $result resulting sendback object generated from query.
      */
     public function collect ()
     {
         //
-        return array();
+        return json_encode(array("Result-Type" => "", "Content" => array()));
     }
 }

@@ -2,8 +2,6 @@
 
 namespace AugustOffensive\controller;
 
-include '../model/Connection.php';
-
 use AugustOffensive\model;
 
 /**
