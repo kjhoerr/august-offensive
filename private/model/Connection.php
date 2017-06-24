@@ -9,7 +9,7 @@ namespace AugustOffensive\model;
  */
 class Connection
 {
-    /** @var PDO $_conn PDO connection to database. */
+    /** @var PDO $_conn \PDO connection to database. */
     private $_conn;
     /**
      * Initiates connection to PostGreSQL database.
@@ -22,7 +22,7 @@ class Connection
         include './creds.php';
 
         try {
-	        $_conn = new PDO(
+	        $_conn = new \PDO(
                 "pgsql: host=" . $cred->getHost() .
                     (($cred->getPort() !== '') ? ";port=" . $cred->getPort() : '') .
                     ";dbname=" . $cred->getDBName(),
@@ -31,7 +31,7 @@ class Connection
             );
             // we destroy $cred as quickly as possible
             $cred = null;
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             // we destroy $cred as quickly as possible
             $cred = null;
             die(json_encode(array("Result-Type" => "Error", "Content" => array($e))));
