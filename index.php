@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = On);
+
 namespace AugustOffensive;
 
 include 'private/model/Connection.php';

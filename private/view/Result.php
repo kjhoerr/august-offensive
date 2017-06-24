@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = On);
+
 namespace AugustOffensive\view;
 
 use AugustOffensive\controller;
@@ -28,7 +30,7 @@ class Result
      *
      * @return string $result resulting sendback object generated from query.
      */
-    public function collect ()
+    public function collect (): string
     {
         //
         return json_encode(array("Result-Type" => "", "Content" => array()));
