@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = On);
+declare(strict_types=1);
 
 /**
  * Holds the credentials for connecting to the database
