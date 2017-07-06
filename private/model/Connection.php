@@ -34,7 +34,7 @@ class Connection
         } catch (\PDOException $e) {
             // we destroy $cred as quickly as possible
             $cred = null;
-            die(json_encode(array("Result-Type" => "Error", "Content" => array($e))));
+            die(json_encode(array("Result-Type" => "Error", "Content" => array($e->getMessage()))));
         }
         return $this;
     }
