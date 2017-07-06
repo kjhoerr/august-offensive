@@ -15,7 +15,7 @@ class Result
     /**
      * Prepares the output and environment for the front end of the service.
      *
-     * @param \Connection $connection "needs to know" model exists
+     * @param model\Connection $connection "needs to know" model exists
      *
      * @return Result
      */
@@ -23,6 +23,7 @@ class Result
     {
         header("Content-Type: application/json");
         //
+        return $this;
     }
 
     /**

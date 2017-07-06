@@ -16,10 +16,10 @@ use AugustOffensive\model;
  */
 class Api 
 {
-    /** @var \Connection $connection the model database interface */
+    /** @var model\Connection $connection the model database interface */
     private $connection;
 
-    /** @var \Result $view the view interface that outputs result of the query */
+    /** @var view\Result $view the view interface that outputs result of the query */
     private $view;
 
     /**
@@ -29,14 +29,15 @@ class Api
      */
     public function __construct ()
     {
-        $connection = new model\Connection();
-        $view = new view\Result($connection);
+        $this->connection = new model\Connection();
+        $this->view = new view\Result($this->connection);
 
         // Provide hook for connecting through controller to justify query
-        $result = $view->collect();
+        $result = $this->view->collect();
 
         // Leak the data
         echo $result;
+        return $this;
     }
 }
 
