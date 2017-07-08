@@ -18,6 +18,9 @@ class Main
     /** @var Model\Result $result the Result object to be sent to the client. */
     private $result;
 
+    /** @var string TYPE The type of output the client should receive. */
+    private const TYPE = "json";
+
     /**
      * Prepares the output and environment for the front end of the service.
      *
@@ -27,8 +30,6 @@ class Main
      */
     public function __construct (Model\Connection $connection)
     {
-        header("Content-Type: application/json");
-
         $this->query = Controller\Controller::createQuery(
             explode('/', trim($_SERVER['PATH_INFO'] ?? '/api', '/')),
             $_SERVER['REQUEST_METHOD'],
@@ -58,7 +59,7 @@ class Main
     }
 
     /**
-     * Communicates with the controller to generate the JSON result.
+     * Communicates with the controller to generate the output.
      *
      * @return string
      */
@@ -69,10 +70,19 @@ class Main
             array()
         );
 
-        // generate result
-        return json_encode(array(
-            "Result-Type" => $this->result->getResultType(),
-            "Content" => $this->result->getResult()
-        ));
+        return self::generateOutput($this->result);
+    }
+
+    /**
+     * Creates output of the result based on the defined constant TYPE.
+     *
+     * @param Model\Result $result The result to be sent to the client.
+     *
+     * @return string
+     */
+    public static function generateOutput (Model\Result $result): string
+    {
+        $type = self::TYPE;
+        return Output::$type($result);
     }
 }

@@ -19,6 +19,7 @@ class Connection
     public function __construct ()
     {
         // Establish connection to db
+        // breaks side-effect rule
         include 'creds.php';
 
         try {
@@ -34,7 +35,7 @@ class Connection
         } catch (\PDOException $err) {
             // we destroy $cred as quickly as possible
             $cred = null;
-            die(json_encode(array("Result-Type" => "ERROR", "Content" => array($err->getMessage()))));
+            throw $err; // throw for Controller to catch
         }
         return $this;
     }

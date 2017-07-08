@@ -4,21 +4,38 @@ declare(strict_types=1);
 
 namespace AugustOffensive;
 
-// y u no autoload
-include 'private/Model/Connection.php';
-include 'private/Model/Query.php';
-include 'private/Model/Result.php';
-include 'private/View/Main.php';
-include 'private/Controller/Controller.php';
+// Borrowed and modified from PSR-4 Closure Example
+spl_autoload_register(
+    function ($class) {
+        $prefix = 'AugustOffensive\\';
+        $relative_class = substr($class, strlen($prefix));
+
+        // find file in /private/ in respective namespace path
+        $file = __DIR__ . '/private/' . str_replace('\\', '/', $relative_class) . '.php';
+
+        // if the file exists, require it
+        if (file_exists($file)) {
+            require $file;
+        }
+    }
+);
 
 use AugustOffensive\View;
-use AugustOffensive\Model;
+use AugustOffensive\Controller;
 
-// initiate connection and build front-end
-$connection = new Model\Connection();
-$view = new View\Main($connection);
+try {
+    // initiate connection and build front-end
+    $connection = Controller\Controller::initiateConnection();
+    $view = new View\Main($connection);
 
-// get results of query from front-end
-$result = $view->generateResult();
+    // get results of query from front-end
+    $result = $view->generateResult();
 
-echo $result;
+    echo $result;
+} catch (\Exception $err) {
+    // catch all exceptions and let the controller generate the error
+    $error = Controller\Controller::errorResult($err);
+
+    // pass generated error result to output
+    echo View\Main::generateOutput($error);
+}
