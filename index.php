@@ -24,7 +24,7 @@ use AugustOffensive\View;
 use AugustOffensive\Controller;
 
 // configure content type before anything is output
-header("Content-Type: application/" + View\Main::TYPE);
+header("Content-Type: application/" . View\Main::TYPE);
 
 try {
     // initiate connection and build front-end

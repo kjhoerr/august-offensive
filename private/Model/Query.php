@@ -54,7 +54,7 @@ class Query
      * 
      * @return string
      */
-    public function get_request (): string
+    public function getRequest (): string
     {
         return $this->request;
     }

@@ -19,7 +19,7 @@ class Main
     private $result;
 
     /** @var string TYPE The type of output the client should receive. */
-    private const TYPE = "json";
+    public const TYPE = "json";
 
     /**
      * Prepares the output and environment for the front end of the service.
@@ -65,10 +65,21 @@ class Main
      */
     public function generateResult (): string
     {
-        $this->result = Controller\Controller::createResult(
-            "",
-            array()
-        );
+        switch (strtolower($this->query->getPath()[1])) {
+            case "callback":
+                $this->result = Controller\Controller::createResult(
+                    "CALLBACK",
+                    array(
+                        "path" => $this->query->getPath(),
+                        "request" => $this->query->getRequest(),
+                        "content" => $this->query->getContent()
+                    )
+                );
+                break;
+            default:
+                $this->result = Controller\Controller::createResult("", array());
+                break;
+        }
 
         return self::generateOutput($this->result);
     }
