@@ -21,11 +21,6 @@ class Output
      */
     public static function json (Model\Result $result, bool $prepare = true): string
     {
-        // breaks side effect rule?
-        if ($prepare) {
-            header("Content-Type: application/json");
-        }
-
         return json_encode(array(
             "Result-Type" => $result->getResultType(),
             "Content" => $result->getResult()

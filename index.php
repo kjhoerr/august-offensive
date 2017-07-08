@@ -23,6 +23,9 @@ spl_autoload_register(
 use AugustOffensive\View;
 use AugustOffensive\Controller;
 
+// configure content type before anything is output
+header("Content-Type: application/" + View\Main::TYPE);
+
 try {
     // initiate connection and build front-end
     $connection = Controller\Controller::initiateConnection();
