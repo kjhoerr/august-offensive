@@ -4,42 +4,21 @@ declare(strict_types=1);
 
 namespace AugustOffensive;
 
-include 'private/model/Connection.php';
-include 'private/view/Result.php';
-include 'private/controller/Controller.php';
+// y u no autoload
+include 'private/Model/Connection.php';
+include 'private/Model/Query.php';
+include 'private/Model/Result.php';
+include 'private/View/Main.php';
+include 'private/Controller/Controller.php';
 
-use AugustOffensive\view;
-use AugustOffensive\model;
+use AugustOffensive\View;
+use AugustOffensive\Model;
 
-/**
- * Constructive controller and initializer API for the service.
- */
-class Api 
-{
-    /** @var model\Connection $connection the model database interface */
-    private $connection;
+// initiate connection and build front-end
+$connection = new Model\Connection();
+$view = new View\Main($connection);
 
-    /** @var view\Result $view the view interface that outputs result of the query */
-    private $view;
+// get results of query from front-end
+$result = $view->generateResult();
 
-    /**
-     * Initiates database connection and forwards environment to the view.
-     *
-     * @return Api 
-     */
-    public function __construct ()
-    {
-        $this->connection = new model\Connection();
-        $this->view = new view\Result($this->connection);
-
-        // Provide hook for connecting through controller to justify query
-        $result = $this->view->collect();
-
-        // Leak the data
-        echo $result;
-        return $this;
-    }
-}
-
-new Api();
-
+echo $result;
