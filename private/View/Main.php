@@ -19,7 +19,7 @@ class Main
     private $result;
 
     /** @var string TYPE The type of output the client should receive. */
-    public const TYPE = "json";
+    const TYPE = "json";
 
     /**
      * Prepares the output and environment for the front end of the service.
@@ -65,20 +65,25 @@ class Main
      */
     public function generateResult (): string
     {
-        switch (strtolower($this->query->getPath()[1])) {
-            case "callback":
-                $this->result = Controller\Controller::createResult(
-                    "CALLBACK",
-                    array(
-                        "path" => $this->query->getPath(),
-                        "request" => $this->query->getRequest(),
-                        "content" => $this->query->getContent()
-                    )
-                );
-                break;
-            default:
-                $this->result = Controller\Controller::createResult("", array());
-                break;
+        $path = $this->query->getPath();
+        if (count($path) >= 1 && $path[0] === "api" && count($path) >= 2) {
+            switch (strtolower($path[1])) {
+                case "callback":
+                    $this->result = Controller\Controller::createResult(
+                        "CALLBACK",
+                        array(
+                            "path" => $path,
+                            "request" => $this->query->getRequest(),
+                            "content" => $this->query->getContent()
+                        )
+                    );
+                    break;
+                default:
+                    $this->result = Controller\Controller::createResult("NOT_UNDERSTOOD", array($path));
+                    break;
+            }
+        } else {
+            $this->result = Controller\Controller::createResult("NOT_UNDERSTOOD", array($path));
         }
 
         return self::generateOutput($this->result);
