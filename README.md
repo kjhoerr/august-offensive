@@ -1,11 +1,15 @@
 # August Offensive
 
-August Offensive is a game as a web service that enables players to achieve world domination in turn-based strategy. Players as Allegiences can generate armies, gain control of regions, and defeat their enemies. The Allegiance that controls all of the regions around the world claims victory of the August Offensive.
+August Offensive is a game as a web service that enables players to achieve world domination in turn-based strategy. Players as Allegiances can generate armies, gain control of regions, and defeat their enemies. The Allegiance that controls all of the regions around the world claims victory of the August Offensive.
 
-The main goal of August Offensive is to enable players to interact with the service only when they're available to do so. Effectively, players do not need to maintain connection to the service to complete the game. To prevent games from deadlocking, a customary time limit is enforced (ex. 96 hours).
+The main goal of August Offensive is to enable players to interact with the service only when they are available to do so. Effectively, players do not need to maintain connection to the service for the entirety of the game. To prevent games from deadlocking, a customary time limit is enforced (ex. 96 hours).
 
 ## Technical Objectives
 
-The web service will provide a RESTful API that is written in PHP 7 and connects to a PostGreSQL database. This connection will be managed behind an abstraction layer using PDO. The service will handle users and their game sessions. In addition, all PHP code shall follow PSR-1, PSR-2, PSR-4, and PSR-5 coding standards. It is also recommended to try to write as immutably as possible.
+The web service will provide a RESTful API that is written in PHP 7.0 and connects to a PostGreSQL database. This connection will be managed behind an abstraction layer using PDO. The service will handle users and their game sessions. In addition, all PHP code shall follow PSR-1, PSR-2, PSR-4, and PSR-5 coding standards. It is also recommended to try to write code as immutably as possible.
 
-The front-end of this project will be written using [Elm](http://elm-lang.org/). Work on the front-end portion will not begin until August Offensive's web API has reached relative stability. The version for target stability is alpha 1.0.0.
+The front-end of this project will be written using [Elm](http://elm-lang.org/) (although this is subject to change). Work on the front-end portion will not begin until August Offensive's web API has reached relative stability. The version for target stability is alpha 1.0.0.
+
+## Contributing to the Project
+
+While the project is still getting off the ground, there is not much back-end of which to build off. That doesn't mean you can't help brainstorm at least! There is much about the core functionality that is still up in the air at this point. Please have a look at [the Roadmap](https://github.com/kjhoerr/august-offensive/wiki/Roadmap) for a detailed layout of intended features and / or milestones.
