@@ -16,7 +16,7 @@ final class OutputTest extends \PHPUnit\Framework\TestCase
     {
         $resultType = "JSON_ENCODED";
         $result = array("json", "1.6");
-        $resultObject = Model\Result($resultType, $result);
+        $resultObject = new Model\Result($resultType, $result);
 
         // If JSON is properly formatted, we can decode and test the values
         $output = json_decode(Output::json($resultObject));
