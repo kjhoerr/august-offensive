@@ -19,7 +19,7 @@ final class OutputTest extends \PHPUnit\Framework\TestCase
         $resultObject = new Model\Result($resultType, $result);
 
         // If JSON is properly formatted, we can decode and test the values
-        $output = json_decode(utf8_encode(Output::json($resultObject)), true);
+        $output = json_decode(Output::json($resultObject), true);
 
         $this->assertEquals(
             $resultType,
