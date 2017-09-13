@@ -15,11 +15,10 @@ class Output
      * Formats the result into JSON.
      *
      * @param Model\Result $result The result to return to the client.
-     * @param bool $prepare Whether to set the content type of the response (default true).
      *
      * @return string
      */
-    public static function json (Model\Result $result, bool $prepare = true): string
+    public static function json (Model\Result $result): string
     {
         return json_encode(array(
             "Result-Type" => $result->getResultType(),
