@@ -1,4 +1,15 @@
-language: php
-php:
-        - '7.0'
-script: phpunit --bootstrap autoload.php test
+language: rust
+rust:
+  - stable
+  - beta
+  - nightly
+cache: cargo
+
+matrix:
+  allow_failures:
+    - rust: nightly
+  fast_finish: true
+
+script:
+  - cargo build --verbose --all
+  - cargo test --verbose --all
