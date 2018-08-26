@@ -1,1 +1,11 @@
 .idea
+.env*
+!.env.sample
+Cargo.lock
+
+migrations/
+target/
+
+*.out
+*~
+**/*.rs.bk
