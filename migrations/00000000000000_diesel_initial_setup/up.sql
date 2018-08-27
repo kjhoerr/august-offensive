@@ -1,9 +1,4 @@
- -- fresh.sql: SQL script that creates the tables used by AO
- -- please drop all tables in db before initiating unless told otherwise
-
- -- uncomment the following two lines to automatically drop all tables
---DROP SCHEMA "public" CASCADE;
---CREATE SCHEMA "public";
+ -- up.sql: Initial database migration for AO
 
 CREATE OR REPLACE FUNCTION public.GETDATE() RETURNS TIMESTAMPTZ
     STABLE LANGUAGE SQL AS 'SELECT NOW()';
@@ -14,9 +9,7 @@ CREATE TABLE users (
     email VARCHAR(40) UNIQUE NOT NULL,
     firstname VARCHAR(20) NOT NULL,
     lastname VARCHAR(20) NOT NULL,
-    password VARCHAR(255) NOT NULL,    -- intend to use bcrypt hash through PHP
-    games INTEGER DEFAULT 0,           -- simple tracking statistics
-    wins INTEGER DEFAULT 0,            -- "
+    password VARCHAR(255) NOT NULL,    -- intend to use bcrypt hash
     joindate DATE DEFAULT GETDATE(),
     activated BIT(1) DEFAULT B'0',     -- see activation_keys table
     PRIMARY KEY (userid)
