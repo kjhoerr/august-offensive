@@ -1,23 +1,40 @@
+// specify recurse depth for error_chain
+#![recursion_limit = "1024"]
+
+extern crate dotenv;
+#[macro_use]
+extern crate error_chain;
 extern crate actix;
 extern crate actix_web;
 extern crate env_logger;
-extern crate dotenv;
 extern crate diesel;
+
+mod errors;
 
 use actix_web::{middleware, server, App, HttpRequest};
 use diesel::prelude::*;
 use diesel::pg::PgConnection;
 use dotenv::dotenv;
 use std::env;
+use errors::*;
 
-fn index(_req: &HttpRequest) -> &'static str {
-    "Hello, world!"
+fn main() {
+    if let Err(ref e) = run() {
+        println!("error: {}", e);
+
+        for e in e.iter().skip(1) {
+            println!("caused by: {}", e);
+        }
+
+        if let Some(backtrace) = e.backtrace() {
+            println!("backtrace: {:?}", backtrace);
+        }
+
+        ::std::process::exit(1);
+    }
 }
 
-// TODO describe change of direction in README
-// TODO implement error-chain
-// TODO match 0.1.0 functionality
-fn main() {
+fn run() -> Result<()> {
     dotenv().ok();
     let db_url = env::var("DATABASE_URL")
         .expect("DATABASE_URL must be set");
@@ -26,7 +43,7 @@ fn main() {
 
     env::set_var("RUST_LOG", "actix_web=info");
     env_logger::init();
-    let sys = actix::System::new("hello-world");
+    let sys = actix::System::new("august-offensive");
 
     PgConnection::establish(&db_url)
         .expect(&format!("Error connecting to {}", db_url));
@@ -42,4 +59,9 @@ fn main() {
 
     println!("Started http server: {}", bind_address);
     let _ = sys.run();
+    Ok(())
+}
+
+fn index(_req: &HttpRequest) -> &'static str {
+    "Hello, world!"
 }

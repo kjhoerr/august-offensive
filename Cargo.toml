@@ -5,7 +5,11 @@ authors = ["Kevin J Hoerr <kjhoerr@submelon.tech>"]
 description = "Turn-based strategy game as a web service"
 license = "ISC"
 readme = "README.md"
-repository = "https://gitlab.com/kjhoerr/august-offensive.git"
+repository = "https://github.com/kjhoerr/august-offensive.git"
+
+[[bin]]
+name = "august-offensive"
+path = "src/main.rs"
 
 [dependencies]
 dotenv = "0.10"
