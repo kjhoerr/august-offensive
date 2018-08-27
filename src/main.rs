@@ -7,9 +7,11 @@ extern crate error_chain;
 extern crate actix;
 extern crate actix_web;
 extern crate env_logger;
+#[macro_use]
 extern crate diesel;
 
-mod errors;
+pub mod errors;
+pub mod schema;
 
 use actix_web::{middleware, server, App, HttpRequest};
 use diesel::prelude::*;
