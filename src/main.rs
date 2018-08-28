@@ -2,41 +2,36 @@
 #![recursion_limit = "1024"]
 
 extern crate dotenv;
-#[macro_use]
-extern crate error_chain;
+extern crate failure;
 extern crate actix;
 extern crate actix_web;
 extern crate env_logger;
 #[macro_use]
 extern crate diesel;
+extern crate serde;
+#[macro_use]
+extern crate serde_derive;
 
-pub mod errors;
 pub mod schema;
+pub mod routes;
 
-use actix_web::{middleware, server, App, HttpRequest};
+use actix_web::{middleware, server, App};
 use diesel::prelude::*;
 use diesel::pg::PgConnection;
 use dotenv::dotenv;
 use std::env;
-use errors::*;
+use failure::Error;
+use routes::*;
 
 fn main() {
     if let Err(ref e) = run() {
         println!("error: {}", e);
 
-        for e in e.iter().skip(1) {
-            println!("caused by: {}", e);
-        }
-
-        if let Some(backtrace) = e.backtrace() {
-            println!("backtrace: {:?}", backtrace);
-        }
-
         ::std::process::exit(1);
     }
 }
 
-fn run() -> Result<()> {
+fn run() -> Result<(), Error> {
     dotenv().ok();
     let db_url = env::var("DATABASE_URL")
         .expect("DATABASE_URL must be set");
@@ -53,8 +48,9 @@ fn run() -> Result<()> {
     server::new(|| {
         App::new()
             .middleware(middleware::Logger::default())
-            .resource("/index.html", |r| r.f(index))
-            .resource("/", |r| r.f(index))
+            .prefix("/api")
+            .handler("/callback", callback)
+            .default_resource(|r| r.f(not_understood))
     }).bind(&bind_address)
         .unwrap()
         .start();
@@ -62,8 +58,4 @@ fn run() -> Result<()> {
     println!("Started http server: {}", bind_address);
     let _ = sys.run();
     Ok(())
-}
-
-fn index(_req: &HttpRequest) -> &'static str {
-    "Hello, world!"
 }
