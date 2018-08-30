@@ -9,8 +9,9 @@ pub fn not_understood(_req: &HttpRequest) -> impl Responder {
 }
 
 pub fn callback(req: &HttpRequest) -> Result<Json<Callback>> {
-    let path = String::from(req.path());
-    let request = (*(req.query().deref())).clone();
+    let path = req.path();
+    let query_ref = req.query();
+    let request = query_ref.deref().clone();
 
     Ok(Json(Callback {
         path: destruct_path(path),
@@ -18,9 +19,10 @@ pub fn callback(req: &HttpRequest) -> Result<Json<Callback>> {
     }))
 }
 
-fn destruct_path(path: String) -> Vec<String> {
+fn destruct_path(path: &str) -> Vec<String> {
     path.split_terminator("/")
+        // first element is always blank due to link starting with "/api"
         .skip(1)
-        .map(|s| String::from(s))
+        .map(String::from)
         .collect::<Vec<String>>()
 }
