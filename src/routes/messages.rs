@@ -14,6 +14,6 @@ pub struct Callback {
 
 impl Message for Callback {
     fn name(&self) -> String {
-        String::from("Callback")
+        String::from("CALLBACK")
     }
 }
