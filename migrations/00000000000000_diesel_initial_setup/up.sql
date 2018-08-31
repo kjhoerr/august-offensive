@@ -28,7 +28,7 @@ CREATE TABLE activation_keys (
 CREATE TABLE games (
     gameid SERIAL,
     title VARCHAR(140) NOT NULL,
-    gametypeid SERIAL NOT NULL,       -- future proofing: suppose different game types
+    gametypeid SERIAL NOT NULL,        -- future proofing: suppose different game types
     players SMALLINT NOT NULL,         -- number of players in a game
     waitfor INTEGER NOT NULL,          -- time in seconds to wait for player to complete a turn
     lastturn DATE DEFAULT GETDATE(),
