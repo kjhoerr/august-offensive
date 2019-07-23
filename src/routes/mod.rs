@@ -1,5 +1,5 @@
-use actix_web::{HttpRequest, Json, Result};
-use std::ops::Deref;
+use actix_web::{web::Json, web::Query, HttpRequest, Result};
+use std::collections::HashMap;
 
 pub mod messages;
 use messages::*;
@@ -7,7 +7,7 @@ use messages::*;
 type JsonMessage<U> = Result<Json<OutgoingMsg<U>>>;
 
 // Sends a default response message when requested an undefined resource.
-pub fn not_understood(req: &HttpRequest) -> JsonMessage<NotUnderstood> {
+pub fn not_understood(req: HttpRequest) -> JsonMessage<NotUnderstood> {
     let message = NotUnderstood {
         path: destruct_path(req.path()),
     };
@@ -16,16 +16,14 @@ pub fn not_understood(req: &HttpRequest) -> JsonMessage<NotUnderstood> {
 }
 
 // Sends Callback message with information from HttpRequest.
-pub fn callback(req: &HttpRequest) -> JsonMessage<Callback> {
+pub fn callback(req: HttpRequest, query: Query<HashMap<String, String>>) -> JsonMessage<Callback> {
     let path = req.path();
     let method = req.method().as_str();
-    let query_ref = req.query();
-    let request = query_ref.deref().clone();
 
     let callback = Callback {
         path: destruct_path(path),
         request: String::from(method),
-        content: request,
+        content: query.into_inner(),
     };
 
     Ok(Json(callback.as_outgoing()))
