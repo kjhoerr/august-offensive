@@ -13,17 +13,16 @@ extern crate serde_derive;
 pub mod routes;
 pub mod schema;
 
-use actix_web::{middleware, web, App, HttpServer};
+use actix_web::{middleware, web::route, web::scope, App, HttpServer};
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenv::dotenv;
 use routes::*;
-use std::env;
-use std::io::Error;
+use std::{env, io::Error};
 
 fn main() {
     if let Err(ref e) = run() {
-        println!("error: {}", e);
+        error!("error: {}", e);
 
         ::std::process::exit(1);
     }
@@ -41,9 +40,9 @@ fn run() -> Result<(), Error> {
 
     HttpServer::new(|| {
         App::new().wrap(middleware::Logger::default()).service(
-            web::scope("/api")
-                .service(web::scope("/callback").default_service(web::route().to(callback)))
-                .default_service(web::route().to(not_understood)),
+            scope("/api")
+                .service(scope("/callback").default_service(route().to(callback)))
+                .default_service(route().to(not_understood)),
         )
     })
     .bind(&bind_address)?
@@ -51,5 +50,6 @@ fn run() -> Result<(), Error> {
 
     info!("Started http server: {}", bind_address);
 
-    sys.run()
+    sys.run()?;
+    Ok(())
 }

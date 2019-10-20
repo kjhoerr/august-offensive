@@ -12,13 +12,15 @@ name = "august-offensive"
 path = "src/main.rs"
 
 [dependencies]
-dotenv = "0.10"
-log = "0.4.0"
-env_logger = "0.6.2"
+dotenv = "0.14"
+log = "0.4"
+env_logger = "0.7"
+anyhow = "1.0"
 
-diesel = { version = "1.4.2", features = ["postgres"] }
+diesel = { version = "1.4.3", features = ["postgres"] }
 
-actix-rt = "0.2.4"
-actix-web = "1.0.5"
+actix-rt = "0.2.5"
+actix-web = "1.0.8"
+actix-diesel = "0.3.0"
 serde = "1.0"
 serde_derive = "1.0"
