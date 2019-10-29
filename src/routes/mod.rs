@@ -2,7 +2,7 @@ use actix_web::{web::Json, web::Query, HttpRequest, Result};
 use std::collections::HashMap;
 
 pub mod messages;
-use messages::*;
+use messages::{callback::*, not_understood::*, *};
 
 type JsonMessage<U> = Result<Json<OutgoingMsg<U>>>;
 
