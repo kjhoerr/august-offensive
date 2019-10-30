@@ -1,30 +1,20 @@
-use actix_web::{web::Json, web::Query, HttpRequest, Result};
+use actix_web::{web::{route, scope, Json, Query}, HttpRequest, Result, Scope};
 use messages::*;
 use std::collections::HashMap;
 
+mod callback;
+mod not_understood;
+
+use self::callback::callback;
+use self::not_understood::not_understood;
+
 type JsonMessage<U> = Result<Json<OutgoingMsg<U>>>;
 
-// Sends a default response message when requested an undefined resource.
-pub fn not_understood(req: HttpRequest) -> JsonMessage<NotUnderstood> {
-    let message = NotUnderstood {
-        path: destruct_path(req.path()),
-    };
-
-    Ok(Json(message.as_outgoing()))
-}
-
-// Sends Callback message with information from HttpRequest.
-pub fn callback(req: HttpRequest, query: Query<HashMap<String, String>>) -> JsonMessage<Callback> {
-    let path = req.path();
-    let method = req.method().as_str();
-
-    let callback = Callback {
-        path: destruct_path(path),
-        request: String::from(method),
-        content: query.into_inner(),
-    };
-
-    Ok(Json(callback.as_outgoing()))
+// Provides the routes for the application
+pub fn get_scope() -> Scope {
+    scope("/api")
+        .service(scope("/callback").default_service(route().to(callback)))
+        .default_service(route().to(not_understood))
 }
 
 // Takes an HttpRequest path and splits it into an array.
@@ -39,108 +29,54 @@ fn destruct_path(path: &str) -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use actix_web::{http::Method, test::TestRequest};
+    use actix_web::{http::{Method, StatusCode}, test::TestRequest};
+    use actix_web::{App, dev::Service, test::{block_on, init_service}};
 
     #[test]
-    fn test_not_understood() {
+    fn test_get_scope_callback() {
         // Arrange
-        let uri = "/api/phpmyadmin/index.rs";
-        let req = gen_request(uri, None);
+        let req = TestRequest::with_uri("/api/callback").to_request();
+        let scope = get_scope();
+        let mut srv = init_service(App::new().service(scope));
 
         // Act
-        let result = not_understood(req);
+        let resp = block_on(srv.call(req)).unwrap();
 
         // Assert
-        assert_eq!(result.is_ok(), true);
-
-        let val = result.unwrap().into_inner();
-        assert_eq!(val.result_type, "NOT_UNDERSTOOD");
-        assert_eq!(val.content.path, vec!["api", "phpmyadmin", "index.rs"]);
+        assert_eq!(resp.status(), StatusCode::OK);
+        //TODO assert response is messages::Callback
+        //assert_eq!(resp.response().json());
     }
 
     #[test]
-    fn test_not_understood_blank() {
+    fn test_get_scope_not_understood() {
         // Arrange
-        let uri = "/";
-        let req = gen_request(uri, None);
+        let req = TestRequest::with_uri("/api/404").to_request();
+        let scope = get_scope();
+        let mut srv = init_service(App::new().service(scope));
 
         // Act
-        let result = not_understood(req);
+        let resp = block_on(srv.call(req)).unwrap();
 
         // Assert
-        assert_eq!(result.is_ok(), true);
-
-        let val = result.unwrap().into_inner();
-        assert_eq!(val.result_type, "NOT_UNDERSTOOD");
-        assert_eq!(val.content.path.is_empty(), true);
+        //FIXME NotUnderstood response's code should be NOT_FOUND?
+        assert_eq!(resp.status(), StatusCode::OK);
+        //TODO assert response is messages::NotUnderstood
+        //assert_eq!(resp.response().json());
     }
 
     #[test]
-    fn test_callback_get() {
+    fn test_get_scope_blank() {
         // Arrange
-        let uri = "/api/phpmyadmin/index.rs";
-        let req = gen_request(uri, None);
-
-        let mut ref_map = HashMap::new();
-        ref_map.insert("hello".to_string(), "world".to_string());
-        ref_map.insert("id".to_string(), "10011".to_string());
-        let query = gen_query(&ref_map);
+        let req = TestRequest::with_uri("/").to_request();
+        let scope = get_scope();
+        let mut srv = init_service(App::new().service(scope));
 
         // Act
-        let result = callback(req, query);
+        let resp = block_on(srv.call(req)).unwrap();
 
         // Assert
-        assert_eq!(result.is_ok(), true);
-
-        let val = result.unwrap().into_inner();
-        assert_eq!(val.result_type, "CALLBACK");
-        assert_eq!(val.content.path, vec!["api", "phpmyadmin", "index.rs"]);
-        assert_eq!(val.content.request, "GET");
-        assert_eq!(val.content.content, ref_map);
-    }
-
-    #[test]
-    fn test_callback_post() {
-        // Arrange
-        let uri = "/api/phpmyadmin/index.rs";
-        let req = gen_request(uri, Some(Method::POST));
-
-        let mut ref_map = HashMap::new();
-        ref_map.insert("hello".to_string(), "world".to_string());
-        ref_map.insert("id".to_string(), "10012".to_string());
-        let query = gen_query(&ref_map);
-
-        // Act
-        let result = callback(req, query);
-
-        // Assert
-        assert_eq!(result.is_ok(), true);
-
-        let val = result.unwrap().into_inner();
-        assert_eq!(val.result_type, "CALLBACK");
-        assert_eq!(val.content.path, vec!["api", "phpmyadmin", "index.rs"]);
-        assert_eq!(val.content.request, "POST");
-        assert_eq!(val.content.content, ref_map);
-    }
-
-    #[test]
-    fn test_callback_blank() {
-        // Arrange
-        let uri = "/";
-        let req = gen_request(uri, None);
-        let query = Query::from_query("").unwrap();
-
-        // Act
-        let result = callback(req, query);
-
-        // Assert
-        assert_eq!(result.is_ok(), true);
-
-        let val = result.unwrap().into_inner();
-        assert_eq!(val.result_type, "CALLBACK");
-        assert_eq!(val.content.path.is_empty(), true);
-        assert_eq!(val.content.request, "GET");
-        assert_eq!(val.content.content.is_empty(), true);
+        assert_eq!(resp.status(), StatusCode::NOT_FOUND);
     }
 
     #[test]
@@ -164,7 +100,7 @@ mod tests {
         let result = destruct_path(path);
 
         // Assert
-        assert_eq!(result.is_empty(), true);
+        assert!(result.is_empty());
     }
 
     #[test]
@@ -176,16 +112,16 @@ mod tests {
         let result = destruct_path(path);
 
         // Assert
-        assert_eq!(result.is_empty(), true);
+        assert!(result.is_empty());
     }
 
-    fn gen_request(path: &str, method: Option<Method>) -> HttpRequest {
+    pub fn gen_request(path: &str, method: Option<Method>) -> HttpRequest {
         TestRequest::with_uri(path)
             .method(method.unwrap_or(Method::GET))
             .to_http_request()
     }
 
-    fn gen_query(map: &HashMap<String, String>) -> Query<HashMap<String, String>> {
+    pub fn gen_query(map: &HashMap<String, String>) -> Query<HashMap<String, String>> {
         let mut query_str = String::new();
         for (key, val) in map.iter() {
             query_str.push_str(&format!("&{}={}", key, val));

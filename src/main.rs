@@ -14,11 +14,10 @@ pub mod messages;
 pub mod routes;
 pub mod schema;
 
-use actix_web::{middleware, web::route, web::scope, App, HttpServer};
+use actix_web::{middleware, App, HttpServer};
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenv::dotenv;
-use routes::*;
 use std::{env, io::Error};
 
 fn main() {
@@ -29,6 +28,7 @@ fn main() {
     }
 }
 
+// Run start-up for the server and dependencies
 fn run() -> Result<(), Error> {
     dotenv().ok();
     let db_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
@@ -40,11 +40,9 @@ fn run() -> Result<(), Error> {
     PgConnection::establish(&db_url).expect(&format!("Error connecting to {}", db_url));
 
     HttpServer::new(|| {
-        App::new().wrap(middleware::Logger::default()).service(
-            scope("/api")
-                .service(scope("/callback").default_service(route().to(callback)))
-                .default_service(route().to(not_understood)),
-        )
+        App::new()
+            .wrap(middleware::Logger::default())
+            .service(routes::get_scope())
     })
     .bind(&bind_address)?
     .start();
