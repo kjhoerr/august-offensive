@@ -7,7 +7,7 @@ pub use self::callback::Callback;
 pub use self::not_understood::NotUnderstood;
 
 #[derive(Serialize)]
-pub struct OutgoingMsg<T> {
+pub struct OutgoingMsg<T: Message> {
     pub result_type: String,
     pub content: T,
 }

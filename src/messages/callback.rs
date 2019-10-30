@@ -1,7 +1,7 @@
 use messages::Message;
 use std::collections::HashMap;
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct Callback {
     pub path: Vec<String>,
     pub request: String,
@@ -49,19 +49,13 @@ mod tests {
             request: String::from("GET"),
             content: HashMap::new(),
         };
+        let message_ref = message.clone();
 
         // Act
         let outgoing = message.as_outgoing();
 
         // Assert
         assert_eq!(outgoing.result_type, "CALLBACK");
-        assert_eq!(
-            outgoing.content,
-            Callback {
-                path: vec![],
-                request: String::from("GET"),
-                content: HashMap::new(),
-            }
-        );
+        assert_eq!(outgoing.content, message_ref);
     }
 }

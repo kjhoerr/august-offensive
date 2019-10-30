@@ -1,6 +1,6 @@
 use messages::Message;
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct NotUnderstood {
     pub path: Vec<String>,
 }
@@ -37,12 +37,13 @@ mod tests {
     fn test_asoutgoing() {
         // Arrange
         let message = NotUnderstood { path: vec![] };
+        let message_ref = message.clone();
 
         // Act
         let outgoing = message.as_outgoing();
 
         // Assert
         assert_eq!(outgoing.result_type, "NOT_UNDERSTOOD");
-        assert_eq!(outgoing.content, NotUnderstood { path: vec![] });
+        assert_eq!(outgoing.content, message_ref);
     }
 }
