@@ -11,7 +11,7 @@ pub fn callback(req: HttpRequest, query: Query<HashMap<String, String>>) -> Json
         content: query.into_inner(),
     };
 
-    Ok(Json(callback.as_outgoing()))
+    Ok(FormatMsg::ok(callback.as_outgoing()))
 }
 
 #[cfg(test)]

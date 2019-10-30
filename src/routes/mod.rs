@@ -1,4 +1,5 @@
-use actix_web::{web::{route, scope, Json, Query}, HttpRequest, Result, Scope};
+use actix_web::{web::{route, scope, Query}, HttpRequest, Result, Scope};
+use actix_web::http::StatusCode;
 use messages::*;
 use std::collections::HashMap;
 
@@ -8,7 +9,7 @@ mod not_understood;
 use self::callback::callback;
 use self::not_understood::not_understood;
 
-type JsonMessage<U> = Result<Json<OutgoingMsg<U>>>;
+type JsonMessage<U> = Result<FormatMsg<OutgoingMsg<U>>>;
 
 // Provides the routes for the application
 pub fn get_scope() -> Scope {
@@ -29,7 +30,7 @@ fn destruct_path(path: &str) -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use actix_web::{http::{Method, StatusCode}, test::TestRequest};
+    use actix_web::{http::Method, test::TestRequest};
     use actix_web::{App, dev::Service, test::{block_on, init_service}};
 
     #[test]
@@ -45,7 +46,7 @@ mod tests {
         // Assert
         assert_eq!(resp.status(), StatusCode::OK);
         //TODO assert response is messages::Callback
-        //assert_eq!(resp.response().json());
+        //assert_eq!(Json::from_request(req, resp.payload()).content_type, "CALLBACK");
     }
 
     #[test]
@@ -59,8 +60,7 @@ mod tests {
         let resp = block_on(srv.call(req)).unwrap();
 
         // Assert
-        //FIXME NotUnderstood response's code should be NOT_FOUND?
-        assert_eq!(resp.status(), StatusCode::OK);
+        assert_eq!(resp.status(), StatusCode::NOT_FOUND);
         //TODO assert response is messages::NotUnderstood
         //assert_eq!(resp.response().json());
     }

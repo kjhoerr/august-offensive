@@ -6,7 +6,10 @@ pub fn not_understood(req: HttpRequest) -> JsonMessage<NotUnderstood> {
         path: destruct_path(req.path()),
     };
 
-    Ok(Json(message.as_outgoing()))
+    Ok(FormatMsg {
+        message: message.as_outgoing(),
+        code: StatusCode::NOT_FOUND,
+    })
 }
 
 #[cfg(test)]
