@@ -3,6 +3,9 @@ use std::marker::Sized;
 pub mod callback;
 pub mod not_understood;
 
+pub use self::callback::Callback;
+pub use self::not_understood::NotUnderstood;
+
 #[derive(Serialize)]
 pub struct OutgoingMsg<T> {
     pub result_type: String,
