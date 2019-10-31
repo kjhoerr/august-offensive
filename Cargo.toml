@@ -1,6 +1,6 @@
 [package]
 name = "august-offensive"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Kevin J Hoerr <kjhoerr@submelon.tech>"]
 description = "Turn-based strategy game as a web service"
 license = "ISC"
