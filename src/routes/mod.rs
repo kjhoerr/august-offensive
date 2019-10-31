@@ -32,6 +32,9 @@ mod tests {
     use super::*;
     use actix_web::{http::Method, test::TestRequest};
     use actix_web::{App, dev::Service, test::{block_on, init_service}};
+    use actix_web::dev::{Body, ServiceResponse};
+    use serde::Deserialize;
+    use std::str;
 
     #[test]
     fn test_get_scope_callback() {
@@ -41,12 +44,14 @@ mod tests {
         let mut srv = init_service(App::new().service(scope));
 
         // Act
-        let resp = block_on(srv.call(req)).unwrap();
+        let resp = &block_on(srv.call(req)).unwrap();
 
         // Assert
         assert_eq!(resp.status(), StatusCode::OK);
-        //TODO assert response is messages::Callback
-        //assert_eq!(Json::from_request(req, resp.payload()).content_type, "CALLBACK");
+
+        let content = get_message::<OutgoingMsg<Callback>>(resp);
+        assert_eq!(content.result_type, "CALLBACK");
+        assert_eq!(content.content.path, vec!["api", "callback"]);
     }
 
     #[test]
@@ -57,12 +62,14 @@ mod tests {
         let mut srv = init_service(App::new().service(scope));
 
         // Act
-        let resp = block_on(srv.call(req)).unwrap();
+        let resp = &block_on(srv.call(req)).unwrap();
 
         // Assert
         assert_eq!(resp.status(), StatusCode::NOT_FOUND);
-        //TODO assert response is messages::NotUnderstood
-        //assert_eq!(resp.response().json());
+
+        let content = get_message::<OutgoingMsg<NotUnderstood>>(resp);
+        assert_eq!(content.result_type, "NOT_UNDERSTOOD");
+        assert_eq!(content.content.path, vec!["api", "404"]);
     }
 
     #[test]
@@ -128,5 +135,19 @@ mod tests {
         }
 
         Query::from_query(&query_str).unwrap()
+    }
+
+    fn get_message<'a, T: Deserialize<'a>>(response: &'a ServiceResponse) -> T {
+        let body = response.response().body().as_ref().unwrap();
+        let mut array = &[b'0';0][..];
+        match body {
+            Body::Bytes(b) => {
+                array = b.as_ref();
+            },
+            _ => {},
+        };
+
+        let van = str::from_utf8(array).unwrap();
+        serde_json::from_str(van).unwrap()
     }
 }

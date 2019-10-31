@@ -1,6 +1,6 @@
 use messages::Message;
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct NotUnderstood {
     pub path: Vec<String>,
 }

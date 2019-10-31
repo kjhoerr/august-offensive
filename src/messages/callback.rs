@@ -1,7 +1,7 @@
 use messages::Message;
 use std::collections::HashMap;
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Callback {
     pub path: Vec<String>,
     pub request: String,
