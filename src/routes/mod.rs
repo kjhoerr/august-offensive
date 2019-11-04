@@ -3,9 +3,11 @@ use actix_web::http::StatusCode;
 use messages::*;
 use std::collections::HashMap;
 
+pub mod format_msg;
 mod callback;
 mod not_understood;
 
+pub use self::format_msg::FormatMsg;
 use self::callback::callback;
 use self::not_understood::not_understood;
 
@@ -32,7 +34,7 @@ mod tests {
     use super::*;
     use actix_web::{http::Method, test::TestRequest};
     use actix_web::{App, dev::Service, test::{block_on, init_service}};
-    use actix_web::dev::{Body, ServiceResponse};
+    use actix_web::{HttpResponse, dev::Body};
     use serde::Deserialize;
     use std::str;
 
@@ -49,7 +51,7 @@ mod tests {
         // Assert
         assert_eq!(resp.status(), StatusCode::OK);
 
-        let content = get_message::<OutgoingMsg<Callback>>(resp);
+        let content = get_message::<OutgoingMsg<Callback>>(resp.response());
         assert_eq!(content.result_type, "CALLBACK");
         assert_eq!(content.content.path, vec!["api", "callback"]);
     }
@@ -67,7 +69,7 @@ mod tests {
         // Assert
         assert_eq!(resp.status(), StatusCode::NOT_FOUND);
 
-        let content = get_message::<OutgoingMsg<NotUnderstood>>(resp);
+        let content = get_message::<OutgoingMsg<NotUnderstood>>(resp.response());
         assert_eq!(content.result_type, "NOT_UNDERSTOOD");
         assert_eq!(content.content.path, vec!["api", "404"]);
     }
@@ -137,8 +139,8 @@ mod tests {
         Query::from_query(&query_str).unwrap()
     }
 
-    fn get_message<'a, T: Deserialize<'a>>(response: &'a ServiceResponse) -> T {
-        let body = response.response().body().as_ref().unwrap();
+    pub fn get_message<'a, T: Deserialize<'a>>(response: &'a HttpResponse) -> T {
+        let body = response.body().as_ref().unwrap();
         let mut array = &[b'0';0][..];
         match body {
             Body::Bytes(b) => {

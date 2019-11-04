@@ -21,6 +21,7 @@ use diesel::prelude::*;
 use dotenv::dotenv;
 use std::{env, io::Error};
 
+#[cfg_attr(tarpaulin, skip)]
 fn main() {
     if let Err(ref e) = run() {
         error!("error: {}", e);
@@ -30,6 +31,7 @@ fn main() {
 }
 
 // Run start-up for the server and dependencies
+#[cfg_attr(tarpaulin, skip)]
 fn run() -> Result<(), Error> {
     dotenv().ok();
     let db_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
