@@ -17,7 +17,7 @@ log = "0.4"
 env_logger = "0.7"
 anyhow = "1.0"
 
-diesel = { version = "1.4.3", features = ["postgres"] }
+diesel = { version = "1.4.3", features = ["postgres", "uuidv07", "chrono"] }
 
 actix-rt = "0.2.5"
 actix-web = "1.0.8"
@@ -25,3 +25,7 @@ actix-diesel = "0.3.0"
 serde = "1.0"
 serde_json = "1.0"
 serde_derive = "1.0"
+
+argonautica = "0.2"
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "0.7", features = ["serde", "v4"] }
