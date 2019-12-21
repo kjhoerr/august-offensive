@@ -1,4 +1,5 @@
-use messages::Message;
+use crate::messages::Message;
+use serde_derive::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct NotUnderstood {

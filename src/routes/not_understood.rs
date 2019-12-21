@@ -1,4 +1,4 @@
-use routes::*;
+use crate::routes::*;
 
 // Sends a default response message when requested an undefined resource.
 pub fn not_understood(req: HttpRequest) -> JsonMessage<NotUnderstood> {
@@ -15,7 +15,7 @@ pub fn not_understood(req: HttpRequest) -> JsonMessage<NotUnderstood> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use routes::tests::*;
+    use crate::routes::tests::*;
 
     #[test]
     fn test_not_understood() {

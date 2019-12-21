@@ -5,6 +5,7 @@ pub mod not_understood;
 
 pub use self::callback::Callback;
 pub use self::not_understood::NotUnderstood;
+use serde_derive::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize)]
 pub struct OutgoingMsg<T: Message> {

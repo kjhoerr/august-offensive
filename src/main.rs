@@ -1,20 +1,14 @@
-extern crate actix_rt;
-extern crate actix_web;
-extern crate dotenv;
-#[macro_use]
-extern crate log;
-extern crate env_logger;
 #[macro_use]
 extern crate diesel;
-extern crate serde;
 #[macro_use]
-extern crate serde_derive;
-extern crate serde_json;
+extern crate log;
 
 pub mod messages;
 pub mod routes;
+#[macro_use]
 pub mod schema;
 
+use actix_rt;
 use actix_web::{middleware, App, HttpServer};
 use diesel::pg::PgConnection;
 use diesel::prelude::*;

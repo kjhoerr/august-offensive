@@ -1,4 +1,5 @@
-use messages::Message;
+use crate::messages::Message;
+use serde_derive::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

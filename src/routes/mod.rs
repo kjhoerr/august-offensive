@@ -1,6 +1,6 @@
 use actix_web::{web::{route, scope, Query}, HttpRequest, Result, Scope};
 use actix_web::http::StatusCode;
-use messages::*;
+use crate::messages::*;
 use std::collections::HashMap;
 
 pub mod format_msg;

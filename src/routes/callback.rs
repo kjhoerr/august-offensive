@@ -1,4 +1,4 @@
-use routes::*;
+use crate::routes::*;
 
 // Sends Callback message with information from HttpRequest.
 pub fn callback(req: HttpRequest, query: Query<HashMap<String, String>>) -> JsonMessage<Callback> {
@@ -17,7 +17,7 @@ pub fn callback(req: HttpRequest, query: Query<HashMap<String, String>>) -> Json
 #[cfg(test)]
 mod tests {
     use super::*;
-    use routes::tests::*;
+    use crate::routes::tests::*;
     use actix_web::http::Method;
 
     #[test]

@@ -39,8 +39,8 @@ impl<T: Serialize> Responder for FormatMsg<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use routes::*;
-    use routes::tests::*;
+    use crate::routes::*;
+    use crate::routes::tests::*;
     use serde::ser::{Error, Serializer};
 
     #[test]
