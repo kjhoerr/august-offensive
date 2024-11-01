@@ -1,0 +1,27 @@
+name: August Offensive PR
+
+on:
+  pull_request:
+    branches: [ "trunk", "master" ]
+
+jobs:
+
+  rust:
+    runs-on: ubuntu-latest
+
+    container:
+      image: xd009642/tarpaulin:develop-nightly
+      options: --security-opt seccomp=unconfined
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate code coverage
+        run: |
+          cargo tarpaulin --verbose --workspace --exclude-files src/schema.rs --out xml
+
+      - name: Upload code coverage report to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: cobertura.xml
+
