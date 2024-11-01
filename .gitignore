@@ -1,7 +1,6 @@
 .idea
 .env*
 !.env.sample
-Cargo.lock
 .todo
 
 target/
