@@ -1,4 +1,4 @@
-use actix_web::{http::StatusCode, Error, HttpRequest, HttpResponse, Responder};
+use actix_web::{body::BoxBody, http::StatusCode, HttpRequest, HttpResponse, Responder};
 use serde::Serialize;
 
 pub struct FormatMsg<T> {
@@ -21,18 +21,17 @@ impl<T> FormatMsg<T> {
 }
 
 impl<T: Serialize> Responder for FormatMsg<T> {
-    type Error = Error;
-    type Future = Result<HttpResponse, Error>;
+    type Body = BoxBody;
 
-    fn respond_to(self, _: &HttpRequest) -> Self::Future {
+    fn respond_to(self, _: &HttpRequest) -> HttpResponse<BoxBody> {
         let body = match serde_json::to_string(&self.message) {
-            Ok(body) => body,
-            Err(e) => return Err(e.into()),
+            Ok(serstr) => serstr,
+            Err(e) => return HttpResponse::from_error(e),
         };
 
-        Ok(HttpResponse::build(self.code)
+        HttpResponse::build(self.code)
             .content_type("application/json")
-            .body(body))
+            .body(body)
     }
 }
 
@@ -87,13 +86,15 @@ mod tests {
         let request = gen_request("/api/404", None);
 
         // Act
-        let result = &formatted.respond_to(&request).unwrap();
+        let result = formatted.respond_to(&request);
 
         // Assert
         assert_eq!(result.status(), StatusCode::NOT_FOUND);
         assert_eq!(result.headers().get("content-type").unwrap(), "application/json");
 
-        let content = get_message::<NotUnderstood>(result);
+        let resp = get_message::<NotUnderstood>(result);
+        assert!(resp.is_ok());
+        let content = resp.unwrap();
         assert_eq!(content, msg_ref);
     }
 
@@ -119,6 +120,6 @@ mod tests {
         let result = formatted.respond_to(&request);
 
         // Assert
-        assert!(result.is_err());
+        assert!(result.error().is_some());
     }
 }

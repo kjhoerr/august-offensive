@@ -31,58 +31,66 @@ fn destruct_path(path: &str) -> Vec<String> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use actix_web::{http::Method, test::TestRequest};
-    use actix_web::{App, dev::Service, test::{block_on, init_service}};
-    use actix_web::{HttpResponse, dev::Body};
-    use serde::Deserialize;
-    use std::str;
 
-    #[test]
-    fn test_get_scope_callback() {
+    use super::*;
+    use actix_web::body::MessageBody;
+    use actix_web::{http::Method, test::TestRequest};
+    use actix_web::{App, test::init_service, dev::Service};
+    use actix_web::HttpResponse;
+    use serde::de::DeserializeOwned;
+
+    #[actix_rt::test]
+    async fn test_get_scope_callback() {
         // Arrange
         let req = TestRequest::with_uri("/api/callback").to_request();
         let scope = get_scope();
-        let mut srv = init_service(App::new().service(scope));
+        let srv = init_service(App::new().service(scope)).await;
 
         // Act
-        let resp = &block_on(srv.call(req)).unwrap();
+        let result = srv.call(req).await;
+        let resp = result.expect("Error found for callback response").into_parts().1;
 
         // Assert
         assert_eq!(resp.status(), StatusCode::OK);
 
-        let content = get_message::<OutgoingMsg<Callback>>(resp.response());
+        let resp = get_message::<OutgoingMsg<Callback>>(resp);
+        assert!(resp.is_ok());
+        let content = resp.unwrap();
         assert_eq!(content.result_type, "CALLBACK");
         assert_eq!(content.content.path, vec!["api", "callback"]);
     }
 
-    #[test]
-    fn test_get_scope_not_understood() {
+    #[actix_rt::test]
+    async fn test_get_scope_not_understood() {
         // Arrange
         let req = TestRequest::with_uri("/api/404").to_request();
         let scope = get_scope();
-        let mut srv = init_service(App::new().service(scope));
+        let srv = init_service(App::new().service(scope)).await;
 
         // Act
-        let resp = &block_on(srv.call(req)).unwrap();
+        let result = srv.call(req).await;
+        let resp = result.expect("Error found for callback response").into_parts().1;
 
         // Assert
         assert_eq!(resp.status(), StatusCode::NOT_FOUND);
 
-        let content = get_message::<OutgoingMsg<NotUnderstood>>(resp.response());
+        let resp = get_message::<OutgoingMsg<NotUnderstood>>(resp);
+        assert!(resp.is_ok());
+        let content = resp.unwrap();
         assert_eq!(content.result_type, "NOT_UNDERSTOOD");
         assert_eq!(content.content.path, vec!["api", "404"]);
     }
 
-    #[test]
-    fn test_get_scope_blank() {
+    #[actix_rt::test]
+    async fn test_get_scope_blank() {
         // Arrange
         let req = TestRequest::with_uri("/").to_request();
         let scope = get_scope();
-        let mut srv = init_service(App::new().service(scope));
+        let srv = init_service(App::new().service(scope)).await;
 
         // Act
-        let resp = block_on(srv.call(req)).unwrap();
+        let result = srv.call(req).await;
+        let resp = result.expect("Error found for callback response");
 
         // Assert
         assert_eq!(resp.status(), StatusCode::NOT_FOUND);
@@ -139,17 +147,11 @@ mod tests {
         Query::from_query(&query_str).unwrap()
     }
 
-    pub fn get_message<'a, T: Deserialize<'a>>(response: &'a HttpResponse) -> T {
-        let body = response.body().as_ref().unwrap();
-        let mut array = &[b'0';0][..];
-        match body {
-            Body::Bytes(b) => {
-                array = b.as_ref();
-            },
-            _ => {},
-        };
+    pub fn get_message<'a, T: DeserializeOwned>(response: HttpResponse) -> Result<T, serde_json::Error> {
+        let body = response.into_body();
+        let bytes = &body.try_into_bytes().unwrap();
 
-        let van = str::from_utf8(array).unwrap();
-        serde_json::from_str(van).unwrap()
+        let van = std::str::from_utf8(bytes).unwrap();
+        serde_json::from_str(van)
     }
 }
