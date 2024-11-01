@@ -1,5 +1,4 @@
 # August Offensive
-[![Build Status](https://travis-ci.org/kjhoerr/august-offensive.svg?branch=master)](https://travis-ci.org/kjhoerr/august-offensive) [![codecov](https://codecov.io/gh/kjhoerr/august-offensive/branch/master/graph/badge.svg)](https://codecov.io/gh/kjhoerr/august-offensive)
 
 August Offensive is a game as a web service that enables players to achieve world domination in turn-based strategy. Players as Allegiances can generate armies, gain control of regions, and defeat their enemies. The Allegiance that controls all of the regions around the world claims victory of the August Offensive.
 
