@@ -1,5 +1,5 @@
 [package]
-edition = "2018"
+edition = "2021"
 name = "august-offensive"
 version = "0.2.3"
 authors = ["Kevin J Hoerr <kjhoerr@submelon.tech>"]
@@ -8,21 +8,24 @@ license = "ISC"
 readme = "README.md"
 repository = "https://github.com/kjhoerr/august-offensive.git"
 
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tarpaulin_include)'] }
+
 [[bin]]
 name = "august-offensive"
 path = "src/main.rs"
 
 [dependencies]
-dotenv = "0.14"
-log = "0.4"
-env_logger = "0.7"
-anyhow = "1.0"
+dotenvy = "*"
+log = "*"
+env_logger = "*"
 
-diesel = { version = "1.4.3", features = ["postgres"] }
+diesel = { version = "2", features = ["postgres", "r2d2", "uuid"] }
 
-actix-rt = "0.2.5"
-actix-web = "1.0.8"
-actix-diesel = "0.3.0"
-serde = "1.0"
-serde_json = "1.0"
-serde_derive = "1.0"
+actix-web = "4"
+actix-rt = "*"
+bytes = "*"
+serde = "*"
+serde_json = "*"
+serde_derive = "*"
+uuid = "*"

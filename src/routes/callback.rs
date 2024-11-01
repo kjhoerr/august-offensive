@@ -1,7 +1,7 @@
 use crate::routes::*;
 
 // Sends Callback message with information from HttpRequest.
-pub fn callback(req: HttpRequest, query: Query<HashMap<String, String>>) -> JsonMessage<Callback> {
+pub async fn callback(req: HttpRequest, query: Query<HashMap<String, String>>) -> JsonMessage<Callback> {
     let path = req.path();
     let method = req.method().as_str();
 
@@ -20,8 +20,8 @@ mod tests {
     use crate::routes::tests::*;
     use actix_web::http::Method;
 
-    #[test]
-    fn test_callback_get() {
+    #[actix_rt::test]
+    async fn test_callback_get() {
         // Arrange
         let uri = "/api/phpmyadmin/index.rs";
         let req = gen_request(uri, None);
@@ -32,7 +32,7 @@ mod tests {
         let query = gen_query(&ref_map);
 
         // Act
-        let result = callback(req, query);
+        let result = callback(req, query).await;
 
         // Assert
         assert!(result.is_ok());
@@ -44,8 +44,8 @@ mod tests {
         assert_eq!(val.content.content, ref_map);
     }
 
-    #[test]
-    fn test_callback_post() {
+    #[actix_rt::test]
+    async fn test_callback_post() {
         // Arrange
         let uri = "/api/phpmyadmin/index.rs";
         let req = gen_request(uri, Some(Method::POST));
@@ -56,7 +56,7 @@ mod tests {
         let query = gen_query(&ref_map);
 
         // Act
-        let result = callback(req, query);
+        let result = callback(req, query).await;
 
         // Assert
         assert!(result.is_ok());
@@ -68,15 +68,15 @@ mod tests {
         assert_eq!(val.content.content, ref_map);
     }
 
-    #[test]
-    fn test_callback_blank() {
+    #[actix_rt::test]
+    async fn test_callback_blank() {
         // Arrange
         let uri = "/";
         let req = gen_request(uri, None);
         let query = Query::from_query("").unwrap();
 
         // Act
-        let result = callback(req, query);
+        let result = callback(req, query).await;
 
         // Assert
         assert!(result.is_ok());
